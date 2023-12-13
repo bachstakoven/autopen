@@ -6,6 +6,7 @@
 import platform
 import subprocess
 import os
+from security import safe_command
 
 def check_distribution():
 	'''
@@ -45,7 +46,7 @@ def update(pack_man):
 		This function updates software packages based on repository state
 		This needs to be included at the beginning of every major installation function
 	'''	
-	update_rc = subprocess.run(['sudo', pack_man, 'update']).returncode
+	update_rc = safe_command.run(subprocess.run, ['sudo', pack_man, 'update']).returncode
 	if update_rc != 0:
 		print ('UPDATE_ FAILED: Failed to update_ system')
 		print ('ERROR CODE:', update_rc)

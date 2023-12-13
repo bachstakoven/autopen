@@ -3,13 +3,14 @@ import os
 import sys
 
 from contextlib import contextmanager
+from security import safe_command
 
 # f = open('log.txt', 'w')
 
 # ps = subprocess.Popen(['ls', '-l'], stdout=subprocess.PIPE)
 # output = subprocess.run(['tee', '-a', 'log.txt'], stdin=ps.stdout)
 
-y = subprocess.run(['ls', '-l']).returncode
+y = safe_command.run(subprocess.run, ['ls', '-l']).returncode
 
 print ('never ever')
 print ('test')

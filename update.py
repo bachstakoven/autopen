@@ -2,6 +2,7 @@ import general_use
 import dependencies
 import subprocess
 import os
+from security import safe_command
 
 def update(toolname):
 
@@ -80,8 +81,8 @@ def update(toolname):
 
 			# github tools are updated based on whether local commit is the same version as the master commit	
 
-			master = subprocess.run(['git', 'rev-parse', 'master'], stdout=subprocess.PIPE).stdout
-			origin_master = subprocess.run(['git', 'rev-parse', 'master'], stdout=subprocess.PIPE).stdout
+			master = safe_command.run(subprocess.run, ['git', 'rev-parse', 'master'], stdout=subprocess.PIPE).stdout
+			origin_master = safe_command.run(subprocess.run, ['git', 'rev-parse', 'master'], stdout=subprocess.PIPE).stdout
 
 			master_id = master.decode('utf-8')
 			origin_master_id = origin_master.decode('utf-8')
@@ -89,7 +90,7 @@ def update(toolname):
 			#users repo is behind master
 			if master_id != origin_master_id:
 				print ('Updating', toolname, '...')
-				pull_rc = subprocess.run(['git', 'pull', 'origin', 'master']).returncode
+				pull_rc = safe_command.run(subprocess.run, ['git', 'pull', 'origin', 'master']).returncode
 				if pull_rc != 0:
 					print ('UPDATE FAILED: Failed to update', toolname)
 					print ('ERROR CODE:', pull_rc)
@@ -102,7 +103,7 @@ def update(toolname):
 
 		elif toolname in commandline_tools:
 			print ('Updating', toolname, '...')
-			update_rc = subprocess.run(['sudo', 'apt-get', '--only-upgrade', '-y', 'install', toolname]).returncode
+			update_rc = safe_command.run(subprocess.run, ['sudo', 'apt-get', '--only-upgrade', '-y', 'install', toolname]).returncode
 			if update_rc != 0:
 				print ('UPDATE FAILED: Failed to update', toolname)
 				print ('ERROR CODE:', update_rc)

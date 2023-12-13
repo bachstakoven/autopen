@@ -53,6 +53,7 @@ import dependencies
 import subprocess
 import os
 import uninstall
+from security import safe_command
 
 link_pyobd_debian = 'http://www.obdtester.com/download/pyobd_0.9.3_all.deb'
 link_pyserial = 'https://sourceforge.net/projects/pyserial/files/pyserial/2.0/pyserial-2.0.zip/download'
@@ -97,7 +98,7 @@ def github_tools(pack_man, toolname, repo):
 		else:
 			print ('INSTALLATION SUCCESSFUL: Successfully installed node.js and npm')
 			print ('Installing canbus-utils...')
-			f_rc = subprocess.run(['npm', 'install']).returncode
+			f_rc = safe_command.run(subprocess.run, ['npm', 'install']).returncode
 			if f_rc != 0:
 				print ('INSTALLATION FAILED: Failed to run "npm install". Cannot complete canbus-utils installation')
 				print ('ERROR CODE:', f_rc)
@@ -127,7 +128,7 @@ def github_tools(pack_man, toolname, repo):
 	elif toolname == 'caringcaribou':
 		print ('Beginning caringcaribou installation...')
 		print ('Setting up usb-to-can connection...')
-		load_rc = subprocess.run(['sudo', 'modprobe', 'can']).returncode 
+		load_rc = safe_command.run(subprocess.run, ['sudo', 'modprobe', 'can']).returncode 
 		if load_rc != 0:
 			print ('LOAD FAILED: Failed to load CAN module. Cannot complete caringcaribou installation')
 			print ('ERROR CODE:', load_rc)
@@ -141,7 +142,7 @@ def github_tools(pack_man, toolname, repo):
 			can_bus = 'can0'
 			bitrate = 500000 
 			print ('Setting up CAN device...')
-			setup_can_rc = subprocess.run(['sudo', 'ip', 'link', 'set', can_bus, 'up', 'type', 'can', 'bitrate', str(bitrate)]).returncode
+			setup_can_rc = safe_command.run(subprocess.run, ['sudo', 'ip', 'link', 'set', can_bus, 'up', 'type', 'can', 'bitrate', str(bitrate)]).returncode
 			if setup_can_rc != 0:
 				print ('SETUP FAILED: Failed to set-up can device.')
 				print ('ERROR CODE:', setup_can_rc)
@@ -153,7 +154,7 @@ def github_tools(pack_man, toolname, repo):
 					print ('ERROR CODE:', pcan_rc)
 				else:
 					print ('DOWNLOAD SUCCESSFUL: Successfully downloaded pythoncan from', link_pythoncan)
-					f_rc = subprocess.run(['sudo', 'python', 'setup.py', 'install']).returncode
+					f_rc = safe_command.run(subprocess.run, ['sudo', 'python', 'setup.py', 'install']).returncode
 					if f_rc != 0:
 						print ('DOWNLOAD SUCCESSFUL: Failed to install python-can. Cannot complete caringcaribou installation')
 						print ('ERROR CODE:', f_rc)
@@ -184,7 +185,7 @@ def github_tools(pack_man, toolname, repo):
 				else:
 					print ('INSTALLATION SUCCESSFUL: Successfully installed sqlite3')
 					print ('Installing c0f...')
-					f_rc = subprocess.run(['sudo', 'gem', 'install', 'c0f']).returncode
+					f_rc = safe_command.run(subprocess.run, ['sudo', 'gem', 'install', 'c0f']).returncode
 					if f_rc != 0:
 						print ('INSTALLATION FAILED: Failed to install c0f.')
 						print ('ERROR CODE:', f_rc)
@@ -215,7 +216,7 @@ def github_tools(pack_man, toolname, repo):
 
 	elif toolname == 'Bluelog': #has an optional web mode so when running want to add that functionality.  (just run make to run)
 		print ('Installing bluelog...')
-		f_rc = subprocess.run(['sudo', 'make', 'install']).returncode
+		f_rc = safe_command.run(subprocess.run, ['sudo', 'make', 'install']).returncode
 		if f_rc != 0:
 			print ('INSTALLATION FAILED: Failed to install bluelog')
 			print ('ERROR CODE:', f_rc)
@@ -261,7 +262,7 @@ def github_tools(pack_man, toolname, repo):
 			c_dir = os.getcwd()
 			path = c_dir + '/config'
 			os.chdir(path)
-			f_rc = subprocess.run(['./build.sh']).returncode
+			f_rc = safe_command.run(subprocess.run, ['./build.sh']).returncode
 			if f_rc != 0:
 				print ('BUILD FAILED: Failed to build and complete installation of Bluemaho')
 				print ('ERROR CODE:', f_rc)
@@ -270,14 +271,14 @@ def github_tools(pack_man, toolname, repo):
 				general_use.move_up_directory()
 
 	elif toolname == 'katoolin':
-		cp_rc = subprocess.run(['sudo', 'cp', 'katoolin.py', '/usr/bin/katoolin']).returncode
+		cp_rc = safe_command.run(subprocess.run, ['sudo', 'cp', 'katoolin.py', '/usr/bin/katoolin']).returncode
 		if cp_rc != 0:
 			print ('COPY FAILED: Could not copy katoolin.py to /usr/bin/katoolin')
 			print ('ERROR CODE:', cp_rc)
 		else:
 			print ('COPY SUCCESSFUL: Successfully copied katoolin.py to /usr/bin/katoolin')
 			print ("Setting /usr/bin/katoolin to executable...")
-			f_rc = subprocess.run(["sudo", "chmod", "+x", "/usr/bin/katoolin"]).returncode #executable script for both you and your group but not for the world. 
+			f_rc = safe_command.run(subprocess.run, ["sudo", "chmod", "+x", "/usr/bin/katoolin"]).returncode #executable script for both you and your group but not for the world. 
 			if f_rc != 0:
 				print ("CONVERSION FAILED: Could not make /usr/bin/katoolin executable")
 				print ("ERROR CODE:", f_rc)
@@ -286,7 +287,7 @@ def github_tools(pack_man, toolname, repo):
 				print ('INSTALLATION SUCCESSFUL: Successfully installed katoolin')
 
 	elif toolname == 'j1939':
-		f_rc = subprocess.run(['make']).returncode 
+		f_rc = safe_command.run(subprocess.run, ['make']).returncode 
 		if f_rc != 0:
 			print ('INSTALLATION FAILED: Failed to install can-utils-j1939. Could not run create executables running make')
 			print ('ERROR CODE:', f_rc)
@@ -360,7 +361,7 @@ def downloaded_tools(pack_man, toolname, link): #WxPython and some other library
 				if deb_rc != 0:
 					print ('Download Failed: Failed to download debian specific file')
 			print ('Installing pyserial...')
-			pyserial_rc = subprocess.run(['python3', '-m', 'pip', 'install', 'pyserial']).returncode
+			pyserial_rc = safe_command.run(subprocess.run, ['python3', '-m', 'pip', 'install', 'pyserial']).returncode
 			if pyserial_rc != 0:
 				print ('INSTALLATION FAILED: Failed to install pyserial. Cannot complete pyobd installation')
 				print ('ERROR CODE:', pyserial_rc)
@@ -374,14 +375,14 @@ def downloaded_tools(pack_man, toolname, link): #WxPython and some other library
 				else:
 					print ('INSTALLATION SUCCESSFUL: Successfully installed python-wxgtk3')
 					print ('Extracting pyobd...')
-					ext_rc = subprocess.run(['tar', '-xzvf', 'pyobd_0.9.3.tar.gz']).returncode
+					ext_rc = safe_command.run(subprocess.run, ['tar', '-xzvf', 'pyobd_0.9.3.tar.gz']).returncode
 					if ext_rc != 0:
 						print ('EXTRACTION FAILED: Failed to decompress pyobd tar file')
 						print ('ERROR CODE:', ext_rc)
 					else:
 						print ('EXTRACTION SUCCESSFUL: Successfully decompressed tar file. Successfully installed pyobd')
 						print ('Removing .tar.gz file...')
-						f_rc = subprocess.run(['rm', '-rf', 'pyobd_0.9.3.tar.gz']).returncode
+						f_rc = safe_command.run(subprocess.run, ['rm', '-rf', 'pyobd_0.9.3.tar.gz']).returncode
 						if f_rc != 0:
 							print ('REMOVAL FAILED: Failed to remove pyobd tar.gz file')
 							print ('ERROR CODE', f_rc)
@@ -390,7 +391,7 @@ def downloaded_tools(pack_man, toolname, link): #WxPython and some other library
 
 		elif toolname == 'o2oo':
 			print ('Beginning o2oo installation...')
-			extract_rc = subprocess.run(['tar', '-xzvf', 'O2OO-0.9.tgz']).returncode
+			extract_rc = safe_command.run(subprocess.run, ['tar', '-xzvf', 'O2OO-0.9.tgz']).returncode
 			if extract_rc != 0:
 				print ('EXTRACTION FAILED: Failed to decompress the o2oo tar file')
 				print ('ERROR CODE:', extract_rc)
@@ -416,14 +417,14 @@ def downloaded_tools(pack_man, toolname, link): #WxPython and some other library
 					current = os.getcwd()
 					p = current + '/O2OO-0.9'
 					os.chdir(p)
-					mak_rc = subprocess.run(['sudo', 'make', 'install']).returncode
+					mak_rc = safe_command.run(subprocess.run, ['sudo', 'make', 'install']).returncode
 					if mak_rc != 0:
 						print ('BUILD FAILED: Failed to build o2oo')
 						print ('ERROR CODE:', mak_rc)
 					else:
 						print ('BUILD SUCCESSFUL: Successfully built o2oo and installed')
 						print ('Removing .tgz file...')
-						f_rc = subprocess.run(['rm', '-rf', 'O2OO-0.9.tgz']).returncode
+						f_rc = safe_command.run(subprocess.run, ['rm', '-rf', 'O2OO-0.9.tgz']).returncode
 						if f_rc != 0:
 							print ('REMOVAL FAILED: Failed to remove o2oo .tgz file')
 							print ('ERROR CODE', f_rc)
@@ -497,7 +498,7 @@ def installed_tools(pack_man, toolname):
 				print ('libvolk1-bin is a tool that optimizes GNU Radio performance')
 			else:
 				print ('INSTALLATION SUCCESSFUL: Successfully installed libvolk1-bin. This optimizes gqrx usage')
-				run_rc = subprocess.run(['volk_profile']).returncode
+				run_rc = safe_command.run(subprocess.run, ['volk_profile']).returncode
 				if run_rc != 0:
 					print ('RUN FAILED: Failed to run volk_profile to complete gqrx usage optimization')
 					print ('gqrx will still run as expected')
@@ -506,7 +507,7 @@ def installed_tools(pack_man, toolname):
 					print ('RUN SUCCESSFUL: Successfully ran volk_profile. gqrx optimization complete')
 		elif toolname == 'can-utils':
 			print ('Ensuring CAN modules are enabled...')
-			f_rc = subprocess.run(['sudo', 'modprobe', 'can']).returncode	#not sure if going to keep this yet mainly cuz might not be necessary, also need to check if redhat has modprobe, it should but need to check (also just check generally if other linux has this already installed)
+			f_rc = safe_command.run(subprocess.run, ['sudo', 'modprobe', 'can']).returncode	#not sure if going to keep this yet mainly cuz might not be necessary, also need to check if redhat has modprobe, it should but need to check (also just check generally if other linux has this already installed)
 			if f_rc != 0:
 				print ('CHECK FAILED: Failed to add a LKM to the kernel. Can-utils may not be fully functional')
 				print ('ERROR CODE:', f_rc)
