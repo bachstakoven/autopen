@@ -8,6 +8,7 @@ import matplotlib
 import threading
 import ttk
 import secrets
+from security import safe_command
 
 matplotlib.use('TkAgg')
 from numpy import arange, sin, pi
@@ -36,7 +37,7 @@ stop = False
 
 def execute(cmd):
 	global popen
-	popen = subprocess.Popen(cmd, stdout=subprocess.PIPE,shell=True, universal_newlines=True)
+	popen = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE,shell=True, universal_newlines=True)
 	for stdout_line in iter(popen.stdout.readline, ""):
 		yield stdout_line 
 	popen.stdout.close()
